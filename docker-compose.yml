@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  github-oidc-provider:
+      build: .
+          container_name: github-oidc-provider
+              restart: unless-stopped
+                  ports:
+                        - "3000:3000"
+                            environment:
+                                  - PORT=3000
+                                        - BASE_URL=${BASE_URL}
+                                              - SESSION_SECRET=${SESSION_SECRET}
+                                                    - GITHUB_CLIENT_ID=${GITHUB_CLIENT_ID}
+                                                          - GITHUB_CLIENT_SECRET=${GITHUB_CLIENT_SECRET}
+                                                                - ISSUER=${ISSUER}
+                                                                      - TOKEN_EXPIRY=${TOKEN_EXPIRY:-3600}
+                                                                            - ALLOWED_ORGS=${ALLOWED_ORGS:-}
+                                                                                  - NODE_ENV=production
+                                                                                      healthcheck:
+                                                                                            test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/health"]
+                                                                                                  interval: 30s
+                                                                                                        timeout: 3s
+                                                                                                              retries: 3
+                                                                                                                    start_period: 5s
+                                                                                                                        networks:
+                                                                                                                              - oidc-network
+                                                                                                                              
+                                                                                                                              networks:
+                                                                                                                                oidc-network:
+                                                                                                                                    driver: bridge
